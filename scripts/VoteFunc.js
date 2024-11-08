@@ -11,40 +11,34 @@ const contractData = require("../artifacts/contracts/VotingSystem.sol/VotingSyst
 const adminAbi = contractData.abi;
 const adminContract = new ethers.Contract(adminContractAddress, adminAbi, wallet);
 
-async function main() {
+// Cast a vote for a party in an election
+async function vote(electionId, partyId) {
+    const tx = await adminContract.vote(electionId, partyId);
+    await tx.wait();
+    return `Voted for party ID: ${partyId} in election ID: ${electionId}`;
+}
+
+module.exports = {
+    vote
+};
+
+/*
+async function main(){
     try {
-        // Retrieve the admin address from the contract
-        const admin = await adminContract.admin();
-        console.log("The admin is:", admin);
-    } catch (error) {
-        console.error("Error fetching admin:", error);
+        const electionId = ""; // Enter electionId
+        const partyId = ""; // Enter partyId
+
+        const result = await vote(electionId,partyId);
+        console.log(result);
+    } catch(error){
+        console.log(error)
     }
 }
 
-// Execute main function
 main()
   .then(() => process.exit(0))
   .catch((error) => {
     console.error("Error in script execution:", error);
     process.exit(1);
   });
-
-
-/*
-// Get the current admin address
-async function getAdmin() {
-    return await adminContract.admin();
-}
-
-// Change the admin address
-async function changeAdmin(newAdminAddress) {
-    const tx = await adminContract.changeAdmin(newAdminAddress);
-    await tx.wait();
-    return `Admin changed to: ${newAdminAddress}`;
-}
-
-module.exports = {
-    getAdmin,
-    changeAdmin
-};
-*/ 
+*/
