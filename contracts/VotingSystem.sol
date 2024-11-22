@@ -22,6 +22,7 @@ contract VotingSystem {
         uint256 id;
         string name;
         uint256 voteCount;
+        string description;
     }
 
     struct ElectionDetails {
@@ -68,20 +69,20 @@ contract VotingSystem {
         newElection.endTime = _endTime;
     }
 
-    function addParty(uint256 electionId, string memory _partyName) public onlyAdmin {
-        ElectionDetails storage election = elections[electionId];
+    function addParty(string memory _partyName, string memory description) public onlyAdmin {
+        ElectionDetails storage election = elections[electionCount];
         require(block.timestamp < election.startTime, "Cannot add parties to a started election");
         
         election.partyCount++;
-        election.parties[election.partyCount] = Party(election.partyCount, _partyName, 0);
+        election.parties[election.partyCount] = Party(election.partyCount, _partyName, 0, description);
     }
 
-    function vote(uint256 electionId, uint256 partyId) public electionOngoing(electionId) notVoted(electionId) {
-        ElectionDetails storage election = elections[electionId];
+    function vote(uint256 partyId) public electionOngoing(electionCount) notVoted(electionCount) {
+        ElectionDetails storage election = elections[electionCount];
         require(partyId <= election.partyCount, "Invalid party ID");
 
-        hasVoted[electionId][msg.sender] = true;
-        voterRegistry[electionId][msg.sender] = partyId;
+        hasVoted[electionCount][msg.sender] = true;
+        voterRegistry[electionCount][msg.sender] = partyId;
 
         election.parties[partyId].voteCount++;
     }
@@ -96,5 +97,17 @@ contract VotingSystem {
         }
 
         return results;
+    }
+
+    function getElectionParties() public view returns(Party[] memory) {
+        ElectionDetails storage election = elections[electionCount];
+
+        
+        Party[] memory parties = new Party[](election.partyCount);
+        for (uint256 i = 1; i <= election.partyCount; i++) {
+            parties[i - 1] = election.parties[i];
+        }
+
+        return parties;
     }
 }
