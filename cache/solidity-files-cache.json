@@ -1,13 +1,90 @@
 {
   "_format": "hh-sol-cache-2",
   "files": {
-    "/Users/i_hasov/Documents/ChainElect/SmartContractEth/contracts/VotingSystem.sol": {
-      "lastModificationDate": 1730906968846,
-      "contentHash": "d4dcf9c55f6437e0332ea1ba6ce3ddb6",
+    "/Users/i_hasov/Documents/ChainElect/SmartContract/contracts/VotingSystem.sol": {
+      "lastModificationDate": 1735054783689,
+      "contentHash": "0c2351a4805c8aeff14a9150a3a60283",
       "sourceName": "contracts/VotingSystem.sol",
       "solcConfig": {
-        "version": "0.8.18",
+        "version": "0.8.20",
         "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.18"
+      ],
+      "artifacts": [
+        "VotingSystem"
+      ]
+    },
+    "/Users/i_hasov/Documents/ChainElect/SmartContract/node_modules/@openzeppelin/contracts/access/Ownable.sol": {
+      "lastModificationDate": 1734875641540,
+      "contentHash": "d3c790edc9ccf808a17c5a6cd13614fd",
+      "sourceName": "@openzeppelin/contracts/access/Ownable.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "evmVersion": "paris",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../utils/Context.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.20"
+      ],
+      "artifacts": [
+        "Ownable"
+      ]
+    },
+    "/Users/i_hasov/Documents/ChainElect/SmartContract/node_modules/@openzeppelin/contracts/utils/Context.sol": {
+      "lastModificationDate": 1734875641309,
+      "contentHash": "67bfbc07588eb8683b3fd8f6f909563e",
+      "sourceName": "@openzeppelin/contracts/utils/Context.sol",
+      "solcConfig": {
+        "version": "0.8.20",
+        "settings": {
+          "evmVersion": "paris",
           "optimizer": {
             "enabled": false,
             "runs": 200
@@ -30,10 +107,10 @@
       },
       "imports": [],
       "versionPragmas": [
-        "^0.8.18"
+        "^0.8.20"
       ],
       "artifacts": [
-        "VotingSystem"
+        "Context"
       ]
     }
   }
