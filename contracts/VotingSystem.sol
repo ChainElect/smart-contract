@@ -107,10 +107,10 @@ contract VotingSystem is Ownable {
     );
 
     // Vote for a specific party in the election
-    function vote(
-        uint256 electionId,
-        uint256 partyId
-    ) public electionOngoing(electionId) {
+    function vote(uint256 electionId, uint256 partyId)
+        public
+        electionOngoing(electionId)
+    {
         ElectionDetails storage election = elections[electionId];
         require(!election.hasVoted[msg.sender], "You have already voted");
         require(
@@ -128,9 +128,11 @@ contract VotingSystem is Ownable {
     }
 
     // Returns the results of the closed election
-    function getResults(
-        uint256 electionId
-    ) public view returns (Party[] memory) {
+    function getResults(uint256 electionId)
+        public
+        view
+        returns (Party[] memory)
+    {
         ElectionDetails storage election = elections[electionId];
         require(
             block.timestamp > election.endTime,
@@ -141,9 +143,11 @@ contract VotingSystem is Ownable {
     }
 
     // Returns all parties that elections have
-    function getElectionParties(
-        uint256 electionId
-    ) external view returns (Party[] memory) {
+    function getElectionParties(uint256 electionId)
+        external
+        view
+        returns (Party[] memory)
+    {
         return elections[electionId].parties;
     }
 
@@ -197,9 +201,7 @@ contract VotingSystem is Ownable {
     }
 
     // Adds a function to get full election details by ID
-    function getElectionDetails(
-        uint256 electionId
-    )
+    function getElectionDetails(uint256 electionId)
         public
         view
         returns (
@@ -218,5 +220,42 @@ contract VotingSystem is Ownable {
             election.endTime,
             election.parties
         );
+    }
+
+    function getClosedElection()
+        public
+        view
+        returns (SimpleElectionDetails[] memory)
+    {
+        uint256 closedCount = 0;
+
+        // First, count the number of closed elections
+        for (uint256 i = 1; i <= electionCount; i++) {
+            if (block.timestamp > elections[i].endTime) {
+                closedCount++;
+            }
+        }
+
+        // Create an array to store the closed elections
+        SimpleElectionDetails[]
+            memory closedElection = new SimpleElectionDetails[](closedCount);
+        uint256 index = 0;
+
+        // Populate the array with closed elections
+        for (uint256 i = 1; i <= electionCount; i++) {
+            if (block.timestamp > elections[i].endTime) {
+                ElectionDetails storage election = elections[i];
+                closedElection[index] = SimpleElectionDetails(
+                    election.id,
+                    election.name,
+                    election.startTime,
+                    election.endTime,
+                    election.parties.length
+                );
+                index++;
+            }
+        }
+
+        return closedElection;
     }
 }
