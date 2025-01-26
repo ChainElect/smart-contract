@@ -2,31 +2,19 @@
 pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./Structs/ElectionStructs.sol";
+import "./Events/ElectionEvents.sol";
 
-contract VotingSystem is Ownable {
-    struct Party {
-        uint256 id;
-        string name;
-        uint256 voteCount;
-        string description;
-    }
+/// @title Voting System Contract
+/// @notice This contract allows the creation and management of elections, including voting functionality.
+contract VotingSystem is Ownable, ElectionEvents {
+    mapping(uint256 => ElectionDetails) private elections; // Store elections by ID
+    uint256 public electionCount; // Total number of elections created
 
-    struct ElectionDetails {
-        uint256 id;
-        string name;
-        uint256 startTime;
-        uint256 endTime;
-        Party[] parties;
-        mapping(address => bool) hasVoted;
-    }
-
-    mapping(uint256 => ElectionDetails) private elections;
-    uint256 public electionCount;
-
-    // Constructor to initialize the contract with the deployer as the owner
+    /// @notice Constructor to initialize the contract with the deployer as the owner
     constructor() Ownable(msg.sender) {}
 
-    // Filters the opened elections
+    /// @notice Modifier to ensure the election is ongoing
     modifier electionOngoing(uint256 electionId) {
         require(
             block.timestamp >= elections[electionId].startTime &&
@@ -36,15 +24,7 @@ contract VotingSystem is Ownable {
         _;
     }
 
-    // Emits all creations
-    event ElectionCreated(
-        uint256 indexed electionId,
-        string name,
-        uint256 startTime,
-        uint256 endTime
-    );
-
-    // Creating new elections
+    /// @notice Create a new election
     function createElection(
         string memory _name,
         uint256 _startTime,
@@ -62,15 +42,7 @@ contract VotingSystem is Ownable {
         emit ElectionCreated(electionCount, _name, _startTime, _endTime);
     }
 
-    // Emits all parties added
-    event PartyAdded(
-        uint256 indexed electionId,
-        uint256 indexed partyId,
-        string name,
-        string description
-    );
-
-    // Add party to early elections, which are shut
+    /// @notice Add a party to an election
     function addParty(
         uint256 electionId,
         string memory _partyName,
@@ -99,14 +71,7 @@ contract VotingSystem is Ownable {
         );
     }
 
-    // Emits all votes
-    event Voted(
-        uint256 indexed electionId,
-        uint256 indexed partyId,
-        address indexed voter
-    );
-
-    // Vote for a specific party in the election
+    /// @notice Vote for a specific party in an election
     function vote(uint256 electionId, uint256 partyId)
         public
         electionOngoing(electionId)
@@ -118,16 +83,22 @@ contract VotingSystem is Ownable {
             "Invalid party ID"
         );
 
-        // Increment the vote count for the party
         election.parties[partyId - 1].voteCount++;
-
-        // Record the vote in the voter registry
         election.hasVoted[msg.sender] = true;
 
         emit Voted(electionId, partyId, msg.sender);
     }
 
-    // Returns the results of the closed election
+    // @notice Returns all parties that elections have
+    function getElectionParties(uint256 electionId)
+        external
+        view
+        returns (Party[] memory)
+    {
+        return elections[electionId].parties;
+    }
+
+    /// @notice Get results of a closed election
     function getResults(uint256 electionId)
         public
         view
@@ -142,24 +113,29 @@ contract VotingSystem is Ownable {
         return election.parties;
     }
 
-    // Returns all parties that elections have
-    function getElectionParties(uint256 electionId)
-        external
+    /// @notice Get details of an election by ID
+    function getElectionDetails(uint256 electionId)
+        public
         view
-        returns (Party[] memory)
+        returns (
+            uint256 id,
+            string memory name,
+            uint256 startTime,
+            uint256 endTime,
+            Party[] memory parties
+        )
     {
-        return elections[electionId].parties;
+        ElectionDetails storage election = elections[electionId];
+        return (
+            election.id,
+            election.name,
+            election.startTime,
+            election.endTime,
+            election.parties
+        );
     }
 
-    struct SimpleElectionDetails {
-        uint256 id;
-        string name;
-        uint256 startTime;
-        uint256 endTime;
-        uint256 partyCount;
-    }
-
-    // Returns all open elections
+    /// @notice Get all ongoing elections
     function getAllOngoingElections()
         public
         view
@@ -200,28 +176,7 @@ contract VotingSystem is Ownable {
         return ongoingElections;
     }
 
-    // Adds a function to get full election details by ID
-    function getElectionDetails(uint256 electionId)
-        public
-        view
-        returns (
-            uint256 id,
-            string memory name,
-            uint256 startTime,
-            uint256 endTime,
-            Party[] memory parties
-        )
-    {
-        ElectionDetails storage election = elections[electionId];
-        return (
-            election.id,
-            election.name,
-            election.startTime,
-            election.endTime,
-            election.parties
-        );
-    }
-
+    /// @notice Get all closed elections
     function getClosedElection()
         public
         view
@@ -229,23 +184,20 @@ contract VotingSystem is Ownable {
     {
         uint256 closedCount = 0;
 
-        // First, count the number of closed elections
         for (uint256 i = 1; i <= electionCount; i++) {
             if (block.timestamp > elections[i].endTime) {
                 closedCount++;
             }
         }
 
-        // Create an array to store the closed elections
         SimpleElectionDetails[]
-            memory closedElection = new SimpleElectionDetails[](closedCount);
+            memory closedElections = new SimpleElectionDetails[](closedCount);
         uint256 index = 0;
 
-        // Populate the array with closed elections
         for (uint256 i = 1; i <= electionCount; i++) {
             if (block.timestamp > elections[i].endTime) {
                 ElectionDetails storage election = elections[i];
-                closedElection[index] = SimpleElectionDetails(
+                closedElections[index] = SimpleElectionDetails(
                     election.id,
                     election.name,
                     election.startTime,
@@ -256,6 +208,6 @@ contract VotingSystem is Ownable {
             }
         }
 
-        return closedElection;
+        return closedElections;
     }
 }
