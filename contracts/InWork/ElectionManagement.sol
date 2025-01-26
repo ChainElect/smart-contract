@@ -2,8 +2,8 @@
 pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./Structs/ElectionStructs.sol";
-import "./Events/ElectionEvents.sol";
+import "../Structs/ElectionStructs.sol";
+import "../Events/ElectionEvents.sol";
 
 // Base contract: ElectionManagement
 /// @title Election Management Contract
