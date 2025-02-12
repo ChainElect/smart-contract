@@ -7,7 +7,8 @@ contract ElectionEvents {
         uint256 indexed electionId,
         string name,
         uint256 startTime,
-        uint256 endTime
+        uint256 endTime,
+        bytes32 merkleRoot // Added for ZKP
     );
 
     /// @notice Event emitted when a new party is added to an election

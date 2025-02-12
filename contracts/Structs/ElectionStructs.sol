@@ -15,9 +15,11 @@ struct ElectionDetails {
     string name;
     uint256 startTime;
     uint256 endTime;
+    bytes32 merkleRoot; // Added for ZKP
     Party[] parties;
-    mapping(address => bool) hasVoted;
+    mapping(uint256 => bool) nullifiers; // Added for ZKP
 }
+
 
 /// @notice Struct for simplified election details
 struct SimpleElectionDetails {
